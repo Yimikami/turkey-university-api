@@ -1,0 +1,77 @@
+import { Link } from 'react-router-dom';
+import { University } from '../types';
+import { GlobeAltIcon, MapPinIcon, BuildingLibraryIcon } from '@heroicons/react/24/outline';
+
+interface UniversityCardProps {
+  university: University;
+}
+
+const UniversityCard = ({ university }: UniversityCardProps) => {
+  return (
+    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+      <div className="p-4">
+        <div className="flex items-center mb-4">
+          {university.logo ? (
+            <img 
+              src={university.logo} 
+              alt={`${university.name} Logo`} 
+              className="w-16 h-16 object-contain mr-4"
+            />
+          ) : (
+            <div className="w-16 h-16 bg-gray-200 flex items-center justify-center rounded-full mr-4">
+              <BuildingLibraryIcon className="w-8 h-8 text-gray-500" />
+            </div>
+          )}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900">{university.name}</h3>
+            <div className="flex items-center text-sm text-gray-600 mt-1">
+              <MapPinIcon className="w-4 h-4 mr-1" />
+              <span>{university.city}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div className="flex items-center justify-between mb-3">
+          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+            university.type.toLowerCase().includes('devlet') 
+              ? 'bg-blue-100 text-blue-800' 
+              : 'bg-purple-100 text-purple-800'
+          }`}>
+            {university.type}
+          </span>
+          
+          {university.website && (
+            <a 
+              href={university.website} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-800 flex items-center text-sm"
+            >
+              <GlobeAltIcon className="w-4 h-4 mr-1" />
+              Website
+            </a>
+          )}
+        </div>
+        
+        <div className="text-sm text-gray-600 mb-4">
+          <p className="line-clamp-2">{university.address}</p>
+        </div>
+        
+        <div className="text-sm text-gray-700">
+          <p>{university.faculties.length} Fakülte</p>
+        </div>
+        
+        <div className="mt-4 pt-4 border-t border-gray-100">
+          <Link 
+            to={`/universities/${university.id}`}
+            className="w-full block text-center py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+          >
+            Detayları Gör
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default UniversityCard;
