@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { searchFaculties, searchPrograms } from "../services/api";
 import { SearchFacultyResult, SearchProgramResult } from "../types";
@@ -80,9 +80,9 @@ const SearchResultsPage = () => {
     }
   };
 
-  const handleSearch = (query: string) => {
+  const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
-  };
+  }, []);
 
   const renderFacultyResults = () => {
     if (facultyResults.length === 0 && !loading && searchQuery) {

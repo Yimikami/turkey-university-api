@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import { getUniversities } from "../services/api";
 import { University } from "../types";
@@ -81,9 +81,12 @@ const UniversityListPage = () => {
     setSearchQuery(query);
   };
 
-  const handleFilterChange = (newFilters: { city?: string; type?: string }) => {
-    setFilters(newFilters);
-  };
+  const handleFilterChange = useCallback(
+    (newFilters: { city?: string; type?: string }) => {
+      setFilters(newFilters);
+    },
+    []
+  );
 
   // Use the pagination hook
   const {
