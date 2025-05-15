@@ -5,12 +5,15 @@ interface UniversityListProps {
   universities: University[];
   loading?: boolean;
   error?: string;
+  // Pagination props are optional to maintain backward compatibility
+  paginationControls?: React.ReactNode;
 }
 
 const UniversityList = ({
   universities,
   loading,
   error,
+  paginationControls,
 }: UniversityListProps) => {
   if (loading) {
     return (
@@ -44,12 +47,16 @@ const UniversityList = ({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {universities.map((university) => (
-        <div key={university.id} className="h-full">
-          <UniversityCard university={university} />
-        </div>
-      ))}
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {universities.map((university) => (
+          <div key={university.id} className="h-full">
+            <UniversityCard university={university} />
+          </div>
+        ))}
+      </div>
+
+      {paginationControls && <div className="mt-8">{paginationControls}</div>}
     </div>
   );
 };
