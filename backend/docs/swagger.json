@@ -1,0 +1,526 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Türkiye Üniversiteleri API",
+    "description": "Türkiye'deki üniversiteler hakkında fakülteleri ve programları da dahil olmak üzere kapsamlı bilgi sağlayan RESTful API servisi.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "API Desteği"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Yerel Geliştirme Sunucusu"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Üniversiteler",
+      "description": "Üniversite bilgilerine erişim"
+    },
+    {
+      "name": "Arama",
+      "description": "Fakülte ve program arama işlemleri"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "API Bilgisi",
+        "description": "API hakkında genel bilgi ve kullanılabilir endpoint'ler",
+        "tags": ["Genel"],
+        "responses": {
+          "200": {
+            "description": "Başarılı",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Türkiye Üniversiteleri API"
+                    },
+                    "endpoints": {
+                      "type": "object",
+                      "properties": {
+                        "/api/universities": {
+                          "type": "string",
+                          "example": "Tüm üniversiteleri listeler"
+                        },
+                        "/api/universities/:id": {
+                          "type": "string",
+                          "example": "ID'ye göre üniversite getirir"
+                        },
+                        "/api/universities/city/:city": {
+                          "type": "string",
+                          "example": "Şehre göre üniversiteleri filtreler"
+                        },
+                        "/api/universities/type/:type": {
+                          "type": "string",
+                          "example": "Türe göre üniversiteleri filtreler (Devlet/Vakıf)"
+                        },
+                        "/api/search/faculty": {
+                          "type": "string",
+                          "example": "Fakülte adına göre arama yapar (query: name)"
+                        },
+                        "/api/search/program": {
+                          "type": "string",
+                          "example": "Program adına göre arama yapar (query: name)"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/universities": {
+      "get": {
+        "summary": "Tüm Üniversiteleri Listele",
+        "description": "Türkiye'deki tüm üniversitelerin listesini döndürür",
+        "tags": ["Üniversiteler"],
+        "responses": {
+          "200": {
+            "description": "Başarılı",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/University"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/universities/{id}": {
+      "get": {
+        "summary": "Üniversite Detayı",
+        "description": "Belirtilen ID'ye sahip üniversitenin detaylı bilgilerini döndürür",
+        "tags": ["Üniversiteler"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Üniversite ID'si",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Başarılı",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/University"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Üniversite bulunamadı",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Üniversite bulunamadı"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/universities/city/{city}": {
+      "get": {
+        "summary": "Şehre Göre Üniversiteleri Filtrele",
+        "description": "Belirtilen şehirdeki üniversitelerin listesini döndürür",
+        "tags": ["Üniversiteler"],
+        "parameters": [
+          {
+            "name": "city",
+            "in": "path",
+            "required": true,
+            "description": "Şehir adı",
+            "schema": {
+              "type": "string",
+              "example": "istanbul"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Başarılı",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/University"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Bu şehirde üniversite bulunamadı",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Bu şehirde üniversite bulunamadı"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/universities/type/{type}": {
+      "get": {
+        "summary": "Türe Göre Üniversiteleri Filtrele",
+        "description": "Belirtilen türdeki (Devlet/Vakıf) üniversitelerin listesini döndürür",
+        "tags": ["Üniversiteler"],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "path",
+            "required": true,
+            "description": "Üniversite türü (Devlet/Vakıf)",
+            "schema": {
+              "type": "string",
+              "enum": ["devlet", "vakıf"],
+              "example": "devlet"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Başarılı",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/University"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Bu türde üniversite bulunamadı",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Bu türde üniversite bulunamadı"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/search/faculty": {
+      "get": {
+        "summary": "Fakülte Ara",
+        "description": "Belirtilen ada göre fakülteleri arar",
+        "tags": ["Arama"],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "Aranacak fakülte adı",
+            "schema": {
+              "type": "string",
+              "example": "mühendislik"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Başarılı",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SearchFacultyResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Fakülte adı belirtilmedi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Fakülte adı belirtilmedi"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Eşleşen fakülte bulunamadı",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Eşleşen fakülte bulunamadı"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/search/program": {
+      "get": {
+        "summary": "Program Ara",
+        "description": "Belirtilen ada göre programları arar",
+        "tags": ["Arama"],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "Aranacak program adı",
+            "schema": {
+              "type": "string",
+              "example": "bilgisayar"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Başarılı",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SearchProgramResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Program adı belirtilmedi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Program adı belirtilmedi"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Eşleşen program bulunamadı",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Eşleşen program bulunamadı"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Program": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Bilgisayar Mühendisliği"
+          }
+        }
+      },
+      "Faculty": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Mühendislik Fakültesi"
+          },
+          "programs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Program"
+            }
+          }
+        }
+      },
+      "University": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 117
+          },
+          "name": {
+            "type": "string",
+            "example": "İSTANBUL TEKNİK ÜNİVERSİTESİ"
+          },
+          "type": {
+            "type": "string",
+            "example": "Devlet"
+          },
+          "city": {
+            "type": "string",
+            "example": "İSTANBUL"
+          },
+          "website": {
+            "type": "string",
+            "example": "https://www.itu.edu.tr"
+          },
+          "address": {
+            "type": "string",
+            "example": "İTÜ Ayazağa Yerleşkesi yeni Rektörlük Binası Kat:2 MASLAK-SARIYER-İSTANBUL"
+          },
+          "logo": {
+            "type": "string",
+            "example": "https://yokatlas.yok.gov.tr/assets/img/logo/115069.png"
+          },
+          "faculties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Faculty"
+            }
+          }
+        }
+      },
+      "SearchFacultyResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 117
+          },
+          "name": {
+            "type": "string",
+            "example": "İSTANBUL TEKNİK ÜNİVERSİTESİ"
+          },
+          "city": {
+            "type": "string",
+            "example": "İSTANBUL"
+          },
+          "type": {
+            "type": "string",
+            "example": "Devlet"
+          },
+          "faculties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Faculty"
+            }
+          }
+        }
+      },
+      "SearchProgramResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 117
+          },
+          "name": {
+            "type": "string",
+            "example": "İSTANBUL TEKNİK ÜNİVERSİTESİ"
+          },
+          "city": {
+            "type": "string",
+            "example": "İSTANBUL"
+          },
+          "type": {
+            "type": "string",
+            "example": "Devlet"
+          },
+          "faculties": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "name": {
+                  "type": "string",
+                  "example": "Mühendislik Fakültesi"
+                },
+                "programs": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Program"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

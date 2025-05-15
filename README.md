@@ -91,6 +91,16 @@ Backend API'si aşağıdaki endpoint'leri sunar:
 | `/api/search/faculty`          | GET   | Fakülteyi ada göre ara (sorgu parametresi: `name`) |
 | `/api/search/program`          | GET   | Programı ada göre ara (sorgu parametresi: `name`)  |
 
+### API Dokümantasyonu
+
+API'nin detaylı dokümantasyonuna aşağıdaki yollarla erişebilirsiniz:
+
+1. **Swagger UI**: Backend sunucusu çalışırken `http://localhost:3000/docs` adresini ziyaret ederek interaktif API dokümantasyonuna erişebilirsiniz.
+
+2. **Markdown Dokümantasyonu**: `backend/docs/api-doc.md` dosyasında API'nin detaylı açıklaması bulunmaktadır.
+
+3. **Swagger JSON**: `backend/docs/swagger.json` dosyası, API'nin OpenAPI/Swagger formatındaki tanımını içerir. Bu dosyayı [Swagger Editor](https://editor.swagger.io/) gibi araçlarda kullanabilirsiniz.
+
 Örnek API kullanımı:
 
 ```javascript
@@ -110,6 +120,11 @@ fetch("http://localhost:3000/api/universities/city/istanbul")
 ```
 turkey-university-api/
 ├── backend/                  # Backend API servisi
+│   ├── docs/                 # API dokümantasyonu
+│   │   ├── api-doc.md        # Markdown formatında API dokümantasyonu
+│   │   ├── swagger.json      # OpenAPI/Swagger formatında API tanımı
+│   │   ├── index.html        # Swagger UI için HTML sayfası
+│   │   └── README.md         # Dokümantasyon hakkında bilgi
 │   ├── index.ts              # Ana uygulama dosyası
 │   ├── package.json          # Bağımlılıklar ve yapılandırma
 │   └── turkey-universities.json  # Üniversite verileri

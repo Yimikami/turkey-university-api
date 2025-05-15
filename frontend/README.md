@@ -2,6 +2,20 @@
 
 Türkiye’deki üniversiteleri, fakülteleri ve programları keşfetmek için kullanıcı dostu bir arayüz sunan modern bir web uygulamasıdır. Bu frontend, Türkiye Üniversiteleri API Backend ile bağlantı kurar.
 
+## Başlangıç
+
+Frontend uygulamasını çalıştırmak için:
+
+```bash
+# Bağımlılıkları yükle
+bun install  # veya npm install
+
+# Geliştirme sunucusunu başlat
+bun run dev  # veya npm run dev
+```
+
+Uygulama varsayılan olarak `http://localhost:5173` adresinde çalışacaktır.
+
 ## Özellikler
 
 - Türkiye’deki tüm üniversiteleri görüntüleme
