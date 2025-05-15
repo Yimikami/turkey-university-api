@@ -1,19 +1,25 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import SearchBar from '../components/SearchBar';
-import { AcademicCapIcon, BuildingLibraryIcon, MapPinIcon } from '@heroicons/react/24/outline';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import SearchBar from "../components/SearchBar";
+import {
+  AcademicCapIcon,
+  BuildingLibraryIcon,
+  MapPinIcon,
+} from "@heroicons/react/24/outline";
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const [searchType, setSearchType] = useState<'university' | 'faculty' | 'program'>('university');
+  const [searchType, setSearchType] = useState<
+    "university" | "faculty" | "program"
+  >("university");
 
   const handleSearch = (query: string) => {
-    if (searchType === 'university') {
-      navigate('/universities', { state: { searchQuery: query } });
-    } else if (searchType === 'faculty') {
-      navigate('/search', { state: { type: 'faculty', searchQuery: query } });
-    } else if (searchType === 'program') {
-      navigate('/search', { state: { type: 'program', searchQuery: query } });
+    if (searchType === "university") {
+      navigate("/universities", { state: { searchQuery: query } });
+    } else if (searchType === "faculty") {
+      navigate("/search", { state: { type: "faculty", searchQuery: query } });
+    } else if (searchType === "program") {
+      navigate("/search", { state: { type: "program", searchQuery: query } });
     }
   };
 
@@ -24,47 +30,51 @@ const HomePage = () => {
           Türkiye Üniversiteleri
         </h1>
         <p className="text-xl text-gray-600 mb-8">
-          Türkiye'deki tüm üniversiteler, fakülteler ve programlar hakkında bilgi edinin
+          Türkiye'deki tüm üniversiteler, fakülteler ve programlar hakkında
+          bilgi edinin
         </p>
 
         <div className="mb-8">
-          <div className="flex justify-center mb-4">
-            <div className="inline-flex rounded-md shadow-sm" role="group">
+          <div className="flex justify-center mb-4 px-2">
+            <div
+              className="inline-flex rounded-md shadow-sm w-full max-w-md"
+              role="group"
+            >
               <button
                 type="button"
-                onClick={() => setSearchType('university')}
-                className={`px-4 py-2 text-sm font-medium rounded-l-lg ${
-                  searchType === 'university'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                onClick={() => setSearchType("university")}
+                className={`flex-1 px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-l-lg ${
+                  searchType === "university"
+                    ? "bg-blue-600 text-white"
+                    : "bg-white text-gray-700 hover:bg-gray-100"
                 } border border-gray-200`}
               >
-                <BuildingLibraryIcon className="w-5 h-5 inline mr-1" />
-                Üniversite
+                <BuildingLibraryIcon className="w-4 h-4 sm:w-5 sm:h-5 inline mr-0 sm:mr-1" />
+                <span className="hidden xs:inline">Üniversite</span>
               </button>
               <button
                 type="button"
-                onClick={() => setSearchType('faculty')}
-                className={`px-4 py-2 text-sm font-medium ${
-                  searchType === 'faculty'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                onClick={() => setSearchType("faculty")}
+                className={`flex-1 px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium ${
+                  searchType === "faculty"
+                    ? "bg-blue-600 text-white"
+                    : "bg-white text-gray-700 hover:bg-gray-100"
                 } border-t border-b border-gray-200`}
               >
-                <AcademicCapIcon className="w-5 h-5 inline mr-1" />
-                Fakülte
+                <AcademicCapIcon className="w-4 h-4 sm:w-5 sm:h-5 inline mr-0 sm:mr-1" />
+                <span className="hidden xs:inline">Fakülte</span>
               </button>
               <button
                 type="button"
-                onClick={() => setSearchType('program')}
-                className={`px-4 py-2 text-sm font-medium rounded-r-lg ${
-                  searchType === 'program'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                onClick={() => setSearchType("program")}
+                className={`flex-1 px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-r-lg ${
+                  searchType === "program"
+                    ? "bg-blue-600 text-white"
+                    : "bg-white text-gray-700 hover:bg-gray-100"
                 } border border-gray-200`}
               >
-                <MapPinIcon className="w-5 h-5 inline mr-1" />
-                Program
+                <MapPinIcon className="w-4 h-4 sm:w-5 sm:h-5 inline mr-0 sm:mr-1" />
+                <span className="hidden xs:inline">Program</span>
               </button>
             </div>
           </div>
@@ -72,54 +82,64 @@ const HomePage = () => {
           <SearchBar
             onSearch={handleSearch}
             placeholder={
-              searchType === 'university'
-                ? 'Üniversite ara...'
-                : searchType === 'faculty'
-                ? 'Fakülte ara...'
-                : 'Program ara...'
+              searchType === "university"
+                ? "Üniversite ara..."
+                : searchType === "faculty"
+                ? "Fakülte ara..."
+                : "Program ara..."
             }
-            className="max-w-2xl mx-auto"
+            className="max-w-2xl mx-auto px-2 sm:px-0"
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <BuildingLibraryIcon className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Üniversiteler</h3>
-            <p className="text-gray-600 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-8 sm:mt-12 px-2 sm:px-0">
+          <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+            <BuildingLibraryIcon className="w-10 h-10 sm:w-12 sm:h-12 text-blue-600 mx-auto mb-3 sm:mb-4" />
+            <h3 className="text-lg sm:text-xl font-semibold mb-2">
+              Üniversiteler
+            </h3>
+            <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
               Türkiye'deki tüm devlet ve vakıf üniversitelerini keşfedin
             </p>
             <button
-              onClick={() => navigate('/universities')}
-              className="text-blue-600 hover:text-blue-800 font-medium"
+              onClick={() => navigate("/universities")}
+              className="text-blue-600 hover:text-blue-800 font-medium text-sm sm:text-base"
             >
               Tümünü Gör
             </button>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <AcademicCapIcon className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Fakülteler</h3>
-            <p className="text-gray-600 mb-4">
+          <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+            <AcademicCapIcon className="w-10 h-10 sm:w-12 sm:h-12 text-blue-600 mx-auto mb-3 sm:mb-4" />
+            <h3 className="text-lg sm:text-xl font-semibold mb-2">
+              Fakülteler
+            </h3>
+            <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
               Üniversitelerin fakülteleri hakkında detaylı bilgi alın
             </p>
             <button
-              onClick={() => navigate('/search', { state: { type: 'faculty' } })}
-              className="text-blue-600 hover:text-blue-800 font-medium"
+              onClick={() =>
+                navigate("/search", { state: { type: "faculty" } })
+              }
+              className="text-blue-600 hover:text-blue-800 font-medium text-sm sm:text-base"
             >
               Fakülteleri Ara
             </button>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <MapPinIcon className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Programlar</h3>
-            <p className="text-gray-600 mb-4">
+          <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md sm:col-span-2 lg:col-span-1 sm:max-w-md sm:mx-auto lg:max-w-none">
+            <MapPinIcon className="w-10 h-10 sm:w-12 sm:h-12 text-blue-600 mx-auto mb-3 sm:mb-4" />
+            <h3 className="text-lg sm:text-xl font-semibold mb-2">
+              Programlar
+            </h3>
+            <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
               Fakültelerin sunduğu eğitim programlarını inceleyin
             </p>
             <button
-              onClick={() => navigate('/search', { state: { type: 'program' } })}
-              className="text-blue-600 hover:text-blue-800 font-medium"
+              onClick={() =>
+                navigate("/search", { state: { type: "program" } })
+              }
+              className="text-blue-600 hover:text-blue-800 font-medium text-sm sm:text-base"
             >
               Programları Ara
             </button>

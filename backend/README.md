@@ -1,31 +1,31 @@
-# Turkey Universities API Backend
+# Türkiye Üniversiteleri API Backend
 
-A RESTful API service that provides comprehensive information about universities in Turkey, including their faculties and programs.
+Türkiye’deki üniversiteler hakkında fakülteleri ve programları da dahil olmak üzere kapsamlı bilgi sağlayan RESTful API servisi.
 
-## Features
+## Özellikler
 
-- List all universities in Turkey
-- Filter universities by city
-- Filter universities by type (Public/Private)
-- Get detailed information about a specific university
-- Search for faculties across all universities
-- Search for programs across all universities
+- Türkiye’deki tüm üniversiteleri listele
+- Üniversiteleri şehre göre filtrele
+- Üniversiteleri türe göre filtrele (Devlet/Vakıf)
+- Belirli bir üniversite hakkında ayrıntılı bilgi al
+- Tüm üniversitelerde fakülte ara
+- Tüm üniversitelerde program ara
 
-## API Endpoints
+## API Uç Noktaları
 
-| Endpoint                       | Method | Description                                    |
-| ------------------------------ | ------ | ---------------------------------------------- |
-| `/`                            | GET    | API information and available endpoints        |
-| `/api/universities`            | GET    | List all universities                          |
-| `/api/universities/:id`        | GET    | Get university by ID                           |
-| `/api/universities/city/:city` | GET    | Filter universities by city                    |
-| `/api/universities/type/:type` | GET    | Filter universities by type (Devlet/Vakıf)     |
-| `/api/search/faculty`          | GET    | Search faculties by name (query param: `name`) |
-| `/api/search/program`          | GET    | Search programs by name (query param: `name`)  |
+| Uç Nokta                       | Metot | Açıklama                                           |
+| ------------------------------ | ----- | -------------------------------------------------- |
+| `/`                            | GET   | API bilgisi ve kullanılabilir uç noktalar          |
+| `/api/universities`            | GET   | Tüm üniversiteleri listele                         |
+| `/api/universities/:id`        | GET   | ID ile üniversite bilgisi getir                    |
+| `/api/universities/city/:city` | GET   | Üniversiteleri şehre göre filtrele                 |
+| `/api/universities/type/:type` | GET   | Üniversiteleri türe göre filtrele (Devlet/Vakıf)   |
+| `/api/search/faculty`          | GET   | Fakülteyi ada göre ara (sorgu parametresi: `name`) |
+| `/api/search/program`          | GET   | Programı ada göre ara (sorgu parametresi: `name`)  |
 
-## Data Structure
+## Veri Yapısı
 
-The API uses a JSON file (`turkey-universities.json`) as its data source with the following structure:
+API, veri kaynağı olarak `turkey-universities.json` adlı bir JSON dosyası kullanır ve yapısı aşağıdaki gibidir:
 
 ```typescript
 interface Program {
@@ -49,3 +49,7 @@ interface University {
   faculties: Faculty[];
 }
 ```
+
+## Bilgilendirme
+
+Bu API, Türkiye’deki üniversiteler hakkında genel bilgiler içerir. Ancak, bu bilgilerin güncel olup olmadığını garanti etmiyoruz. Verilerinizi doğrulamak ve güncel tutmak için lütfen ilgili üniversiteye veya resmi web sitesine başvurun. Ayrıca kesinlikle resmi bir API servisi değildir; sadece bilgilendirme ve eğitim amaçlıdır.
