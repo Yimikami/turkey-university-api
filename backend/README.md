@@ -11,7 +11,7 @@ API'yi çalıştırmak için:
 bun index.ts
 
 # veya Node.js ile çalıştırma
-node index.js
+node index.ts
 ```
 
 API varsayılan olarak `http://localhost:3000` adresinde çalışacaktır.
