@@ -56,6 +56,13 @@ const SearchResultsPage = () => {
   useEffect(() => {
     if (searchQuery) {
       performSearch(searchQuery);
+    } else {
+      // Load initial suggestions with a common search term
+      if (searchType === "faculty") {
+        performSearch("fakülte");
+      } else {
+        performSearch("program");
+      }
     }
   }, [searchType]);
 
@@ -75,6 +82,41 @@ const SearchResultsPage = () => {
         )
       );
       return Array.from(new Set(suggestions)).sort();
+    }
+  }, [facultyResults, programResults, searchType]);
+
+  // Create suggestion data for direct navigation
+  const suggestionData = useMemo(() => {
+    if (searchType === "faculty") {
+      // Create a mapping of faculty names to university IDs
+      const data: Array<{ name: string; id: number }> = [];
+
+      facultyResults.forEach((university) => {
+        university.faculties.forEach((faculty) => {
+          data.push({
+            name: faculty.name,
+            id: university.id,
+          });
+        });
+      });
+
+      return data;
+    } else {
+      // Create a mapping of program names to university IDs
+      const data: Array<{ name: string; id: number }> = [];
+
+      programResults.forEach((university) => {
+        university.faculties.forEach((faculty) => {
+          faculty.programs.forEach((program) => {
+            data.push({
+              name: program.name,
+              id: university.id,
+            });
+          });
+        });
+      });
+
+      return data;
     }
   }, [facultyResults, programResults, searchType]);
 
@@ -110,16 +152,31 @@ const SearchResultsPage = () => {
         setProgramPage(1);
       }
 
-      // If query is empty, don't perform search
+      // If query is empty, load default suggestions
       if (!query.trim()) {
-        setFacultyResults([]);
-        setProgramResults([]);
+        if (searchType === "faculty") {
+          performSearch("fakülte");
+        } else {
+          performSearch("program");
+        }
         return;
       }
 
       performSearch(query);
     },
     [searchType]
+  );
+
+  // Handle suggestion click to perform a search with the suggestion
+  const handleSuggestionClick = useCallback(
+    (suggestion: string) => {
+      // Simply perform a search with the suggestion
+      handleSearch(suggestion);
+
+      // This will update the search query and trigger a search
+      // without navigating away from the search page
+    },
+    [handleSearch]
   );
 
   const renderFacultyResults = () => {
@@ -327,6 +384,8 @@ const SearchResultsPage = () => {
           className="max-w-3xl"
           suggestions={searchSuggestions}
           initialValue={searchQuery}
+          onSuggestionClick={handleSuggestionClick}
+          suggestionData={suggestionData}
         />
       </div>
 

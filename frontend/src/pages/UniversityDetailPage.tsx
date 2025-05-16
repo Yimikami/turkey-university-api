@@ -130,6 +130,14 @@ const UniversityDetailPage = () => {
             <p className="text-gray-700 mb-6">{university.address}</p>
 
             <FacultyList faculties={university.faculties} />
+            <h2 className="text-xl font-semibold mb-2">Harita</h2>
+            <div className="w-full">
+              <iframe
+                width="100%"
+                height="600"
+                src={`https://www.google.com/maps?f=q&source=s_q&hl=tr&geocode=&q=${university.address}&output=embed`}
+              ></iframe>
+            </div>
           </div>
         </div>
       </div>

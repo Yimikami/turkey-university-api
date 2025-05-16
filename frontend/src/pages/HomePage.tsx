@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SearchBar from "../components/SearchBar";
-import { getUniversities } from "../services/api";
+import {
+  getUniversities,
+  searchFaculties,
+  searchPrograms,
+} from "../services/api";
+import { SearchFacultyResult, SearchProgramResult } from "../types";
 import {
   AcademicCapIcon,
   BuildingLibraryIcon,
@@ -25,6 +30,7 @@ const HomePage = () => {
     const loadSuggestions = async () => {
       try {
         if (searchType === "university") {
+          // Load university suggestions
           const universities = await getUniversities();
           setSuggestions(universities.map((uni) => uni.name));
 
@@ -35,11 +41,74 @@ const HomePage = () => {
               id: uni.id,
             }))
           );
-        } else {
-          // For faculty and program, we'll just use empty suggestions
-          // as they would require additional API calls
-          setSuggestions([]);
-          setUniversityData([]);
+        } else if (searchType === "faculty") {
+          // For faculties, we'll make a search with a common term to get some initial suggestions
+          try {
+            // Use a common search term that will likely match many faculties
+            const results = await searchFaculties("fakülte");
+            // Extract faculty names from results
+            const facultyNames = results.flatMap((uni: SearchFacultyResult) =>
+              uni.faculties.map((faculty) => faculty.name)
+            );
+
+            // Remove duplicates and sort
+            setSuggestions(
+              Array.from(new Set(facultyNames)).sort() as string[]
+            );
+
+            // Create mapping for direct navigation
+            const data: Array<{ name: string; id: number }> = [];
+            results.forEach((uni: SearchFacultyResult) => {
+              uni.faculties.forEach((faculty) => {
+                data.push({
+                  name: faculty.name,
+                  id: uni.id,
+                });
+              });
+            });
+
+            setUniversityData(data);
+          } catch (err) {
+            console.error("Failed to load faculty suggestions:", err);
+            setSuggestions([]);
+            setUniversityData([]);
+          }
+        } else if (searchType === "program") {
+          // For programs, we'll make a search with a common term to get some initial suggestions
+          try {
+            // Use a common search term that will likely match many programs
+            const results = await searchPrograms("program");
+            // Extract program names from results
+            const programNames = results.flatMap((uni: SearchProgramResult) =>
+              uni.faculties.flatMap((faculty) =>
+                faculty.programs.map((program) => program.name)
+              )
+            );
+
+            // Remove duplicates and sort
+            setSuggestions(
+              Array.from(new Set(programNames)).sort() as string[]
+            );
+
+            // Create mapping for direct navigation
+            const data: Array<{ name: string; id: number }> = [];
+            results.forEach((uni: SearchProgramResult) => {
+              uni.faculties.forEach((faculty) => {
+                faculty.programs.forEach((program) => {
+                  data.push({
+                    name: program.name,
+                    id: uni.id,
+                  });
+                });
+              });
+            });
+
+            setUniversityData(data);
+          } catch (err) {
+            console.error("Failed to load program suggestions:", err);
+            setSuggestions([]);
+            setUniversityData([]);
+          }
         }
       } catch (error) {
         console.error("Failed to load suggestions:", error);
@@ -65,17 +134,27 @@ const HomePage = () => {
 
   const handleSuggestionClick = (suggestion: string) => {
     if (searchType === "university") {
-      // Find the university that matches the suggestion
-      const university = universityData.find((uni) => uni.name === suggestion);
+      // For university suggestions, find the matching university and navigate directly to its detail page
+      const university = universityData.find(
+        (item) => item.name === suggestion
+      );
       if (university) {
-        // Navigate directly to the university detail page
         navigate(`/universities/${university.id}`);
         return;
       }
+      // If no match found, fall back to search page
+      navigate("/universities", { state: { searchQuery: suggestion } });
+    } else if (searchType === "faculty") {
+      // For faculty suggestions, navigate to the faculty search page
+      navigate("/search", {
+        state: { type: "faculty", searchQuery: suggestion },
+      });
+    } else if (searchType === "program") {
+      // For program suggestions, navigate to the program search page
+      navigate("/search", {
+        state: { type: "program", searchQuery: suggestion },
+      });
     }
-
-    // If no direct match or not in university search mode, perform regular search
-    handleSearch(suggestion);
   };
 
   return (
