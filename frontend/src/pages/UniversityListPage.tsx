@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
-import { useLocation } from "react-router-dom";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { getUniversities } from "../services/api";
 import { University } from "../types";
 import SearchBar from "../components/SearchBar";
@@ -10,6 +10,7 @@ import { usePagination } from "../hooks/usePagination";
 
 const UniversityListPage = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const initialSearchQuery = location.state?.searchQuery || "";
 
   const [universities, setUniversities] = useState<University[]>([]);
@@ -22,6 +23,24 @@ const UniversityListPage = () => {
   const [cities, setCities] = useState<string[]>([]);
   const [types, setTypes] = useState<string[]>([]);
   const [filters, setFilters] = useState<{ city?: string; type?: string }>({});
+
+  // Generate search suggestions from university names
+  const searchSuggestions = useMemo(() => {
+    const uniNames = universities.map((uni) => uni.name);
+    // Add city names that aren't already in the list
+    const allSuggestions = [...uniNames];
+
+    // Remove duplicates and sort
+    return Array.from(new Set(allSuggestions)).sort();
+  }, [universities]);
+
+  // Create a mapping of university names to their IDs for direct navigation
+  const universityData = useMemo(() => {
+    return universities.map((uni) => ({
+      name: uni.name,
+      id: uni.id,
+    }));
+  }, [universities]);
 
   useEffect(() => {
     const fetchUniversities = async () => {
@@ -56,11 +75,13 @@ const UniversityListPage = () => {
 
     // Apply search filter
     if (searchQuery) {
-      const query = searchQuery.toLowerCase();
+      // Normalize the query for case-insensitive search
+      // This handles Turkish characters like İ/i properly
+      const query = searchQuery.toLocaleLowerCase("tr-TR");
       result = result.filter(
         (uni) =>
-          uni.name.toLowerCase().includes(query) ||
-          uni.city.toLowerCase().includes(query)
+          uni.name.toLocaleLowerCase("tr-TR").includes(query) ||
+          uni.city.toLocaleLowerCase("tr-TR").includes(query)
       );
     }
 
@@ -79,11 +100,27 @@ const UniversityListPage = () => {
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
+    // Reset to first page when search changes
+    setCurrentPage(1);
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    // Find the university that matches the suggestion
+    const university = universities.find((uni) => uni.name === suggestion);
+    if (university) {
+      // Navigate to the university detail page
+      navigate(`/universities/${university.id}`);
+    } else {
+      // If no match, just perform a search
+      setSearchQuery(suggestion);
+    }
   };
 
   const handleFilterChange = useCallback(
     (newFilters: { city?: string; type?: string }) => {
       setFilters(newFilters);
+      // Reset to first page when filters change
+      setCurrentPage(1);
     },
     []
   );
@@ -97,7 +134,7 @@ const UniversityListPage = () => {
   } = usePagination(filteredUniversities, {
     initialPage: 1,
     itemsPerPage: 9,
-    totalItems: universities.length,
+    totalItems: filteredUniversities.length, // Use filtered count instead of total
   });
 
   // Create pagination controls component
@@ -117,6 +154,10 @@ const UniversityListPage = () => {
           onSearch={handleSearch}
           placeholder="Üniversite adı veya şehir ara..."
           className="max-w-3xl"
+          suggestions={searchSuggestions}
+          initialValue={searchQuery}
+          onSuggestionClick={handleSuggestionClick}
+          suggestionData={universityData}
         />
       </div>
 

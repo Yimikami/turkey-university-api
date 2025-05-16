@@ -4,6 +4,7 @@ import {
   AdjustmentsHorizontalIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
+import SearchableSelect from "./SearchableSelect";
 
 interface FilterSectionProps {
   cities: string[];
@@ -28,7 +29,7 @@ const FilterSection = ({
   }, [selectedCity, selectedType, onFilterChange]);
 
   const handleCityChange = (city: string) => {
-    setSelectedCity(city === selectedCity ? "" : city);
+    setSelectedCity(city);
   };
 
   const handleTypeChange = (type: string) => {
@@ -68,25 +69,12 @@ const FilterSection = ({
         <div>
           <div className="mb-4">
             <h4 className="font-medium mb-2">Şehir</h4>
-            <div className="max-h-40 overflow-y-auto">
-              {cities.map((city) => (
-                <div key={city} className="flex items-center mb-2">
-                  <input
-                    type="checkbox"
-                    id={`city-${city}`}
-                    checked={selectedCity === city}
-                    onChange={() => handleCityChange(city)}
-                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-                  />
-                  <label
-                    htmlFor={`city-${city}`}
-                    className="ml-2 text-sm text-gray-700"
-                  >
-                    {city}
-                  </label>
-                </div>
-              ))}
-            </div>
+            <SearchableSelect
+              options={cities}
+              value={selectedCity}
+              onChange={handleCityChange}
+              placeholder="Şehir seçiniz..."
+            />
           </div>
 
           <div className="mb-4">
@@ -149,25 +137,12 @@ const FilterSection = ({
             <div className="p-4">
               <div className="mb-6">
                 <h4 className="font-medium mb-3">Şehir</h4>
-                <div className="max-h-60 overflow-y-auto">
-                  {cities.map((city) => (
-                    <div key={city} className="flex items-center mb-3 py-1">
-                      <input
-                        type="checkbox"
-                        id={`mobile-city-${city}`}
-                        checked={selectedCity === city}
-                        onChange={() => handleCityChange(city)}
-                        className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
-                      />
-                      <label
-                        htmlFor={`mobile-city-${city}`}
-                        className="ml-3 text-sm text-gray-700"
-                      >
-                        {city}
-                      </label>
-                    </div>
-                  ))}
-                </div>
+                <SearchableSelect
+                  options={cities}
+                  value={selectedCity}
+                  onChange={handleCityChange}
+                  placeholder="Şehir seçiniz..."
+                />
               </div>
 
               <div className="mb-6">

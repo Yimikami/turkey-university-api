@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SearchBar from "../components/SearchBar";
+import { getUniversities } from "../services/api";
 import {
   AcademicCapIcon,
   BuildingLibraryIcon,
@@ -12,8 +13,47 @@ const HomePage = () => {
   const [searchType, setSearchType] = useState<
     "university" | "faculty" | "program"
   >("university");
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+
+  // State to store university data for direct navigation
+  const [universityData, setUniversityData] = useState<
+    Array<{ name: string; id: number }>
+  >([]);
+
+  // Load suggestions based on search type
+  useEffect(() => {
+    const loadSuggestions = async () => {
+      try {
+        if (searchType === "university") {
+          const universities = await getUniversities();
+          setSuggestions(universities.map((uni) => uni.name));
+
+          // Store university data for direct navigation
+          setUniversityData(
+            universities.map((uni) => ({
+              name: uni.name,
+              id: uni.id,
+            }))
+          );
+        } else {
+          // For faculty and program, we'll just use empty suggestions
+          // as they would require additional API calls
+          setSuggestions([]);
+          setUniversityData([]);
+        }
+      } catch (error) {
+        console.error("Failed to load suggestions:", error);
+        setSuggestions([]);
+        setUniversityData([]);
+      }
+    };
+
+    loadSuggestions();
+  }, [searchType]);
 
   const handleSearch = (query: string) => {
+    if (!query.trim()) return;
+
     if (searchType === "university") {
       navigate("/universities", { state: { searchQuery: query } });
     } else if (searchType === "faculty") {
@@ -21,6 +61,21 @@ const HomePage = () => {
     } else if (searchType === "program") {
       navigate("/search", { state: { type: "program", searchQuery: query } });
     }
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    if (searchType === "university") {
+      // Find the university that matches the suggestion
+      const university = universityData.find((uni) => uni.name === suggestion);
+      if (university) {
+        // Navigate directly to the university detail page
+        navigate(`/universities/${university.id}`);
+        return;
+      }
+    }
+
+    // If no direct match or not in university search mode, perform regular search
+    handleSearch(suggestion);
   };
 
   return (
@@ -89,6 +144,9 @@ const HomePage = () => {
                 : "Program ara..."
             }
             className="max-w-2xl mx-auto px-2 sm:px-0"
+            suggestions={suggestions}
+            onSuggestionClick={handleSuggestionClick}
+            suggestionData={universityData}
           />
         </div>
 

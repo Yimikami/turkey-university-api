@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { searchFaculties, searchPrograms } from "../services/api";
 import { SearchFacultyResult, SearchProgramResult } from "../types";
@@ -57,7 +57,26 @@ const SearchResultsPage = () => {
     if (searchQuery) {
       performSearch(searchQuery);
     }
-  }, [searchType, searchQuery]);
+  }, [searchType]);
+
+  // Generate search suggestions based on current results
+  const searchSuggestions = useMemo(() => {
+    if (searchType === "faculty") {
+      // Extract faculty names from results
+      const suggestions = facultyResults.flatMap((result) =>
+        result.faculties.map((faculty) => faculty.name)
+      );
+      return Array.from(new Set(suggestions)).sort();
+    } else {
+      // Extract program names from results
+      const suggestions = programResults.flatMap((result) =>
+        result.faculties.flatMap((faculty) =>
+          faculty.programs.map((program) => program.name)
+        )
+      );
+      return Array.from(new Set(suggestions)).sort();
+    }
+  }, [facultyResults, programResults, searchType]);
 
   const performSearch = async (query: string) => {
     setLoading(true);
@@ -80,9 +99,28 @@ const SearchResultsPage = () => {
     }
   };
 
-  const handleSearch = useCallback((query: string) => {
-    setSearchQuery(query);
-  }, []);
+  const handleSearch = useCallback(
+    (query: string) => {
+      setSearchQuery(query);
+
+      // Reset to first page when search changes
+      if (searchType === "faculty") {
+        setFacultyPage(1);
+      } else {
+        setProgramPage(1);
+      }
+
+      // If query is empty, don't perform search
+      if (!query.trim()) {
+        setFacultyResults([]);
+        setProgramResults([]);
+        return;
+      }
+
+      performSearch(query);
+    },
+    [searchType]
+  );
 
   const renderFacultyResults = () => {
     if (facultyResults.length === 0 && !loading && searchQuery) {
@@ -287,6 +325,8 @@ const SearchResultsPage = () => {
             searchType === "faculty" ? "Fakülte ara..." : "Program ara..."
           }
           className="max-w-3xl"
+          suggestions={searchSuggestions}
+          initialValue={searchQuery}
         />
       </div>
 
